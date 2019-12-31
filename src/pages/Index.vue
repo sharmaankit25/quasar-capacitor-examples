@@ -9,10 +9,11 @@
       <div>Manufacturer: {{ manufacturer }}</div>
     </div>
     <br><br>
-    <div class="capacitor-only">
       <q-btn color="primary" label="Get Picture" @click="captureImage" />
-      <img :src="imageSrc" width="50" height="50">
       <br><br>
+      <img :src="imageSrc" v-if="imageSrc" width="50" height="50">
+      <br><br>
+    <div class="capacitor-only">
       <q-btn color="primary" @click="show_toast" label="Show Toast" />
       <br><br>
       <q-btn color="primary" @click="showStatusBar" label="Show Status" />
@@ -29,7 +30,9 @@
 </template>
 
 <script>
-import { Plugins, CameraResultType, StatusBarStyle } from '@capacitor/core'
+import { Plugins, CameraResultType, CameraSource, StatusBarStyle } from '@capacitor/core'
+
+import { defineCustomElements } from '@ionic/pwa-elements/loader'
 
 const { Geolocation, Camera, Device, Toast, StatusBar, SplashScreen, Share, LocalNotifications, PushNotifications } = Plugins
 export default {
@@ -65,8 +68,8 @@ export default {
     getCurrentPosition () {
       Geolocation.getCurrentPosition().then(position => {
         this.position = position
-        this.latitude = position.coords.latitude
-        this.longitude = position.coords.longitude
+        this.latitude = position ? position.coords.latitude : null
+        this.longitude = position ? position.coords.longitude : null
       })
     },
     async share () {
@@ -79,15 +82,16 @@ export default {
     },
     async captureImage () {
       const image = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: true,
-        resultType: CameraResultType.Uri
-      })
+        quality: 100,
+        allowEditing: false,
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Camera
+      }).catch(err => alert(err))
       // image.webPath will contain a path that can be set as an image src.
       // You can access the original file using image.path, which can be
       // passed to the Filesystem API to read the raw data of the image,
       // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-      this.imageSrc = image.webPath
+      this.imageSrc = image ? image.webPath : null
     },
     async show_toast () {
       await Toast.show({
@@ -108,6 +112,9 @@ export default {
     }
   },
   mounted () {
+    // PWA Elements
+    defineCustomElements(window) // Camera implementation for web
+
     // Push Notifications
     // Register with Apple / Google to receive push via APNS/FCM
     PushNotifications.register()
