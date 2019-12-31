@@ -24,3 +24,6 @@ quasar build
 
 ### Customize the configuration
 See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+
+### Push Notifications
+Add google-services.json file to /src-capacitor/android/app/google-services.json

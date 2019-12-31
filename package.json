@@ -4,7 +4,7 @@
   "description": "A Quasar Framework app",
   "productName": "Quasar App",
   "cordovaId": "org.cordova.quasar.app",
-  "capacitorId": "",
+  "capacitorId": "org.cordova.quasar.app",
   "author": "Ankit Sharma <ankit.sharma25@gmail.com>",
   "private": true,
   "scripts": {

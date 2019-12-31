@@ -31,7 +31,7 @@
 <script>
 import { Plugins, CameraResultType, StatusBarStyle } from '@capacitor/core'
 
-const { Geolocation, Camera, Device, Toast, StatusBar, SplashScreen, Share, LocalNotifications } = Plugins
+const { Geolocation, Camera, Device, Toast, StatusBar, SplashScreen, Share, LocalNotifications, PushNotifications } = Plugins
 export default {
   name: 'PageIndex',
   data () {
@@ -108,6 +108,38 @@ export default {
     }
   },
   mounted () {
+    // Push Notifications
+    // Register with Apple / Google to receive push via APNS/FCM
+    PushNotifications.register()
+
+    // On success, we should be able to receive notifications
+    PushNotifications.addListener('registration',
+      (token) => {
+        alert('Push registration success, token: ' + token.value)
+      }
+    )
+
+    // Some issue with our setup and push will not work
+    PushNotifications.addListener('registrationError',
+      (error) => {
+        alert('Error on registration: ' + JSON.stringify(error))
+      }
+    )
+
+    // Show us the notification payload if the app is open on our device
+    PushNotifications.addListener('pushNotificationReceived',
+      (notification) => {
+        alert('Push received: ' + JSON.stringify(notification))
+      }
+    )
+
+    // Method called when tapping on a notification
+    PushNotifications.addListener('pushNotificationActionPerformed',
+      (notification) => {
+        alert('Push action performed: ' + JSON.stringify(notification))
+      }
+    )
+
     // Ask Permissions for notification on web
     Notification.requestPermission().then(function (permission) {
       console.log('Permission Granted')
