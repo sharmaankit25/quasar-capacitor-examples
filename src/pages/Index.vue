@@ -26,6 +26,11 @@
       <br><br>
     </div>
       <q-btn @click="local_notification" label="Local Notification" />
+      <br><br>
+      <q-btn color="negative" @click="showAlert" label="Alert" />
+      <q-btn color="primary" @click="showConfirm" label="Confirm" />
+      <q-btn color="info" @click="showPrompt" label="Prompt" />
+      <q-btn color="warning" @click="showActions" label="Actions" />
   </q-page>
 </template>
 
@@ -34,7 +39,7 @@ import { Plugins, CameraResultType, CameraSource, StatusBarStyle } from '@capaci
 
 import { defineCustomElements } from '@ionic/pwa-elements/loader'
 
-const { Geolocation, Camera, Device, Toast, StatusBar, SplashScreen, Share, LocalNotifications, PushNotifications } = Plugins
+const { Geolocation, Camera, Device, Toast, Modals, StatusBar, SplashScreen, Share, LocalNotifications, PushNotifications } = Plugins
 export default {
   name: 'PageIndex',
   data () {
@@ -49,6 +54,45 @@ export default {
     }
   },
   methods: {
+    async showAlert () {
+      let alertRet = await Modals.alert({
+        title: 'Stop',
+        message: 'this is an error'
+      })
+      console.log('Confirm ret', alertRet)
+    },
+    async showConfirm () {
+      let confirmRet = await Modals.confirm({
+        title: 'Confirm',
+        message: 'Are you sure you\'d like to press the red button?'
+      })
+      console.log('Confirm ret', confirmRet)
+    },
+    async showPrompt () {
+      let promptRet = await Modals.prompt({
+        title: 'Hello',
+        message: 'What\'s your name?'
+      })
+      console.log('Prompt ret', promptRet)
+    },
+    async showActions () {
+      let promptRet = await Modals.showActions({
+        title: 'Photo Options',
+        message: 'Select an option to perform',
+        options: [
+          {
+            title: 'Upload'
+          },
+          {
+            title: 'Share'
+          },
+          {
+            title: 'Remove'
+          }
+        ]
+      })
+      console.log('You selected', promptRet)
+    },
     local_notification () {
       LocalNotifications.schedule({
         notifications: [
