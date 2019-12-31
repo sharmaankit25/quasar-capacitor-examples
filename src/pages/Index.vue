@@ -4,30 +4,34 @@
       GPS position: <strong>{{ latitude }} , {{ longitude }}</strong>
     </div>
     <br><br>
-    <div class="capacitor-only">
-      <q-btn color="primary" label="Get Picture" @click="captureImage" />
-      <img :src="imageSrc">
-    </div>
-    <br><br>
     <div>
       <div>Model: {{ model }}</div>
       <div>Manufacturer: {{ manufacturer }}</div>
     </div>
     <br><br>
-    <q-btn color="primary" @click="show_toast" label="Show Toast" />
-    <br><br>
-    <q-btn color="primary" @click="showStatusBar" label="Show Status" />
-    <br><br>
-    <q-btn color="primary" @click="hideStatusBar" label="Hide Status" />
-    <br><br>
-    <q-btn color="primary" @click="changeStatusBar" label="Change Status" />
+    <div class="capacitor-only">
+      <q-btn color="primary" label="Get Picture" @click="captureImage" />
+      <img :src="imageSrc" width="50" height="50">
+      <br><br>
+      <q-btn color="primary" @click="show_toast" label="Show Toast" />
+      <br><br>
+      <q-btn color="primary" @click="showStatusBar" label="Show Status" />
+      <br><br>
+      <q-btn color="primary" @click="hideStatusBar" label="Hide Status" />
+      <br><br>
+      <q-btn color="primary" @click="changeStatusBar" label="Change Status" />
+      <br><br>
+      <q-btn @click="share" label="Share" />
+      <br><br>
+    </div>
+      <q-btn @click="local_notification" label="Local Notification" />
   </q-page>
 </template>
 
 <script>
 import { Plugins, CameraResultType, StatusBarStyle } from '@capacitor/core'
 
-const { Geolocation, Camera, Device, Toast, StatusBar } = Plugins
+const { Geolocation, Camera, Device, Toast, StatusBar, SplashScreen, Share, LocalNotifications } = Plugins
 export default {
   name: 'PageIndex',
   data () {
@@ -42,11 +46,35 @@ export default {
     }
   },
   methods: {
+    local_notification () {
+      LocalNotifications.schedule({
+        notifications: [
+          {
+            title: 'Local Notification',
+            body: 'this is a local notification triggered',
+            id: 1,
+            schedule: { at: new Date(Date.now() + 1000 * 5) },
+            sound: 'res://platform_default',
+            attachments: null,
+            actionTypeId: '',
+            extra: null
+          }
+        ]
+      })
+    },
     getCurrentPosition () {
       Geolocation.getCurrentPosition().then(position => {
         this.position = position
         this.latitude = position.coords.latitude
         this.longitude = position.coords.longitude
+      })
+    },
+    async share () {
+      await Share.share({
+        title: 'See cool stuff',
+        text: 'Really awesome thing you need to see right meow',
+        url: 'http://ionicframework.com/',
+        dialogTitle: 'Share with buddies'
       })
     },
     async captureImage () {
@@ -80,6 +108,11 @@ export default {
     }
   },
   mounted () {
+    // Ask Permissions for notification on web
+    Notification.requestPermission().then(function (permission) {
+      console.log('Permission Granted')
+    })
+
     this.getCurrentPosition()
     // we start listening
     this.geoId = Geolocation.watchPosition({}, (position, err) => {
@@ -91,6 +124,12 @@ export default {
     Device.getInfo().then(info => {
       this.model = info.model
       this.manufacturer = info.manufacturer
+    })
+
+    // Show the splash for two seconds and then auto hide:
+    SplashScreen.show({
+      showDuration: 3000,
+      autoHide: true
     })
   },
   beforeDestroy () {
