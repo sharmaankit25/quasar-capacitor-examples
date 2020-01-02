@@ -24,6 +24,14 @@
       <br><br>
       <q-btn @click="share" label="Share" />
       <br><br>
+      <h3>Haptics</h3>
+      <q-btn color="negative" @click="hapticsImpact" label="Impact" />
+      <q-btn color="primary" @click="hapticsImpactMedium" label="Impact Medium" />
+      <q-btn color="info" @click="hapticsImpactLight" label="Impact Light" />
+      <q-btn color="warning" @click="hapticsVibrate" label="Vibrate" />
+      <q-btn color="secondary" @click="hapticsSelectionStart" label="SelectionStart" />
+      <q-btn color="secondary" @click="hapticsSelectionChanged" label="SelectionChanged" />
+      <q-btn color="secondary" @click="hapticsSelectionEnd" label="SelectionEnd" />
     </div>
       <q-btn @click="local_notification" label="Local Notification" />
       <br><br>
@@ -31,15 +39,16 @@
       <q-btn color="primary" @click="showConfirm" label="Confirm" />
       <q-btn color="info" @click="showPrompt" label="Prompt" />
       <q-btn color="warning" @click="showActions" label="Actions" />
+      <br><br>
   </q-page>
 </template>
 
 <script>
-import { Plugins, CameraResultType, CameraSource, StatusBarStyle } from '@capacitor/core'
+import { Plugins, CameraResultType, CameraSource, StatusBarStyle, HapticsImpactStyle } from '@capacitor/core'
 
 import { defineCustomElements } from '@ionic/pwa-elements/loader'
 
-const { Geolocation, Camera, Device, Toast, Modals, StatusBar, SplashScreen, Share, LocalNotifications, PushNotifications } = Plugins
+const { Geolocation, Camera, Haptics, Device, Toast, Modals, StatusBar, SplashScreen, Share, LocalNotifications, PushNotifications } = Plugins
 export default {
   name: 'PageIndex',
   data () {
@@ -54,6 +63,43 @@ export default {
     }
   },
   methods: {
+    hapticsImpact (style = HapticsImpactStyle.Heavy) {
+      if (this.$q.platform.is.mobile) {
+        Haptics.impact({
+          style: style
+        })
+      }
+    },
+    hapticsImpactMedium (style) {
+      if (this.$q.platform.is.mobile) {
+        this.hapticsImpact(HapticsImpactStyle.Medium)
+      }
+    },
+    hapticsImpactLight (style) {
+      if (this.$q.platform.is.mobile) {
+        this.hapticsImpact(HapticsImpactStyle.Light)
+      }
+    },
+    hapticsVibrate () {
+      if (this.$q.platform.is.mobile) {
+        Haptics.vibrate()
+      }
+    },
+    hapticsSelectionStart () {
+      if (this.$q.platform.is.mobile) {
+        Haptics.selectionStart()
+      }
+    },
+    hapticsSelectionChanged () {
+      if (this.$q.platform.is.mobile) {
+        Haptics.selectionChanged()
+      }
+    },
+    hapticsSelectionEnd () {
+      if (this.$q.platform.is.mobile) {
+        Haptics.selectionEnd()
+      }
+    },
     async showAlert () {
       let alertRet = await Modals.alert({
         title: 'Stop',
